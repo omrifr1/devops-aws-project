@@ -1,5 +1,4 @@
 ﻿# DevOps AWS Project - Live Infrastructure
-
 ## Current Status
 - AWS Instance: 13.49.21.7
 - Nginx running successfully
