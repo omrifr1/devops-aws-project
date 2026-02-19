@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  web-server:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    restart: always
+
+  status-check:
+    image: portainer/portainer-ce:latest
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
