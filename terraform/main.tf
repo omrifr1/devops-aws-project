@@ -102,20 +102,47 @@ resource "aws_security_group" "web" {
 
 # EC2 Instance
 resource "aws_instance" "web" {
-  ami                    = "ami-0014ce3e52359afbd"  # Ubuntu 22.04 Stockholm
+  ami                    = "ami-0014ce3e52359afbd" # Ubuntu 22.04 Stockholm
   instance_type          = "t3.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.web.id]
-  
+
   user_data = <<-EOF
               #!/bin/bash
+              # 1. Update and install dependencies
               apt-get update
-              apt-get install -y docker.io
+              apt-get install -y docker.io python3-requests
+              
+              # 2. Start Docker and run Nginx
               systemctl start docker
               systemctl enable docker
               docker run -d -p 80:80 nginx
+
+              # 3. Create the Python Monitoring Script
+              cat <<'INNEREOF' > /home/ubuntu/monitor.py
+              import requests
+              import datetime
+
+              LOG_FILE = "/home/ubuntu/monitor.log"
+              URL = "http://localhost"
+
+              try:
+                  r = requests.get(URL, timeout=5)
+                  status = f"{datetime.datetime.now()} - Status: {r.status_code} - Healthy\n"
+              except Exception as e:
+                  status = f"{datetime.datetime.now()} - Error: {e}\n"
+
+              with open(LOG_FILE, "a") as f:
+                  f.write(status)
+              INNEREOF
+
+              # 4. Set correct permissions for the script
+              chown ubuntu:ubuntu /home/ubuntu/monitor.py
+
+              # 5. Setup Cron Job to run every minute
+              echo "* * * * * /usr/bin/python3 /home/ubuntu/monitor.py" | crontab -u ubuntu -
               EOF
-  
+
   tags = {
     Name    = "devops-web-server"
     Project = "sprint-feb-2026"
