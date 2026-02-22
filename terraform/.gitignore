@@ -4,4 +4,4 @@
 .aws/
 *.exe
 *.pem
-
+*.tfvars
