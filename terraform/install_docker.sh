@@ -25,6 +25,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
 EOT
+
 sleep 10
 cd /home/ubuntu/app
 docker-compose up -d
+usermod -aG docker ubuntu
