@@ -1,8 +1,3 @@
-# העתק את זה ל-main.tf שנפתח לך:
-variable "my_ip" {
-  default = "77.137.84.125/32"
-  description = "My Home IP address"
-}
 terraform {
   required_providers {
     aws = {
@@ -74,6 +69,15 @@ resource "aws_security_group" "web" {
   name   = "devops-web-sg"
   vpc_id = aws_vpc.main.id
 
+# EC2 Instance Connect Service (Required for browser-based SSH)
+  ingress {
+    description = "EC2 Instance Connect"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["13.248.118.0/24"] # טווח ה-IP של שירות ה-Connect ב-Stockholm
+  }
+  
   ingress {
     description = "HTTP"
     from_port   = 80
@@ -114,43 +118,7 @@ resource "aws_instance" "web" {
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.web.id]
 
-user_data = <<-EOF
-              #!/bin/bash
-              apt-get update
-              apt-get install -y docker.io docker-compose
-              systemctl start docker
-              systemctl enable docker
-
-              # יצירת תיקיית אפליקציה ותת-תיקייה ל-HTML
-              mkdir -p /home/ubuntu/app/html
-              
-              # יצירת קובץ HTML ראשוני בשרת
-              echo "<h1>Build by Terraform, Managed by Portainer - Omri 2026</h1>" > /home/ubuntu/app/html/index.html
-
-              # יצירת קובץ ה-Compose בשרת
-              cat <<EOT > /home/ubuntu/app/docker-compose.yml
-              version: '3.8'
-              services:
-                web-server:
-                  image: nginx:latest
-                  ports:
-                    - "80:80"
-                  volumes:
-                    - /home/ubuntu/app/html:/usr/share/nginx/html
-                  restart: always
-                visualizer:
-                  image: portainer/portainer-ce:latest
-                  ports:
-                    - "9000:9000"
-                  volumes:
-                    - /var/run/docker.sock:/var/run/docker.sock
-                  restart: always
-              EOT
-
-              # הרצת ה-Stack
-              cd /home/ubuntu/app
-              docker-compose up -d
-              EOF
+user_data = file("${path.module}/install_docker.sh")
 
   tags = {
     Name = "devops-composite-server"
