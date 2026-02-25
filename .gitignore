@@ -1,9 +1,20 @@
-# Terraform exclusions
+# OS files
+.DS_Store
+Thumbs.db
+
+# Terraform
 **/.terraform/
 *.tfstate
-*.tfstate.backup
+*.tfstate.*
 *.tfvars
+*.tfvars.json
 .terraform.lock.hcl
+*.backup
 
-# Docker exclusions (רק קבצים זמניים, לא קוד)
-*.log
+# Docker
+.env
+docker/data/
+
+# Keys & Secrets
+*.pem
+*.key
