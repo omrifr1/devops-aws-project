@@ -67,11 +67,15 @@ resource "aws_security_group" "web" {
 }
 
 resource "aws_instance" "web" {
+  key_name               = "omri-devops-key"
   ami                    = "ami-0014ce3e52359afbd"
-  instance_type          = var.instance_type
-  key_name               = "sprint-feb-2026"
+  instance_type          = "t3.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.web.id]
-  user_data              = file("/install_docker.sh")
-  tags                   = { Name = "devops-server-vFinal" }
+
+  user_data = file("${path.module}/install_docker.sh")
+
+  tags = {
+    Name = "devops-composite-server"
+  }
 }
