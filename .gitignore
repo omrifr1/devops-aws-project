@@ -1,20 +1,24 @@
-# OS files
-.DS_Store
-Thumbs.db
-
 # Terraform
-**/.terraform/
+.terraform/
 *.tfstate
 *.tfstate.*
 *.tfvars
 *.tfvars.json
 .terraform.lock.hcl
-*.backup
 
-# Docker
-.env
-docker/data/
-
-# Keys & Secrets
+# Security & Secrets
 *.pem
 *.key
+*.pub
+.env
+aws_access_keys.txt
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Scripts & Temporary
+*.log
+tmp/
