@@ -1,6 +1,9 @@
-terraform/
-.terraform/
-terraform.tfstate*
-docker/
-[Dd]ockerfile
+# Terraform exclusions
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform.lock.hcl
+
+# Docker exclusions (רק קבצים זמניים, לא קוד)
 *.log
